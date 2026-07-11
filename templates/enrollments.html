@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enrollments</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="table-container">
+    <h1>Enrollments</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Course ID</th>
+            <th>Date</th>
+        </tr>
+
+        {% for e in enrollments %}
+        <tr>
+            <td>{{ e[0] }}</td>
+            <td>{{ e[1] }}</td>
+            <td>{{ e[2] }}</td>
+            <td>{{ e[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

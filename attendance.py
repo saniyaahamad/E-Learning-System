@@ -1,134 +1,138 @@
-# from flask import Flask, request, jsonify
-# from flask_mysqldb import MySQL
-#
-# app = Flask(__name__)
-#
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'info123'
-# app.config['MYSQL_DB'] = 'elearningdb'
-#
-# mysql = MySQL(app)
+from fastapi import FastAPI
+import pymysql
+
+app = FastAPI()
+
+# MySQL Connection
+connection = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="info123",
+    database="elearningdb"
+)
 
 
-# GET
-# @app.route('/attendance', methods=['GET'])
-# def get_attendance():
-#
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM attendance")
-#     rows = cur.fetchall()
-#     cur.close()
-#
-#     return jsonify(rows)
+# GET ALL ATTENDANCE
+@app.get("/attendance")
+def get_attendance():
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM attendance")
+    rows = cur.fetchall()
+    cur.close()
+
+    return {"attendance": rows}
+
+
+# GET ONE ATTENDANCE RECORD
+@app.get("/attendance/{id}")
+def get_one_attendance(id: int):
+    cur = connection.cursor()
+    cur.execute(
+        "SELECT * FROM attendance WHERE id=%s",
+        (id,)
+    )
+    row = cur.fetchone()
+    cur.close()
+
+    return {"attendance": row}
 
 
 # POST
-# @app.route('/attendance', methods=['POST'])
-# def add_attendance():
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         INSERT INTO attendance
-#         (id, student_id, attendance_date, status)
-#         VALUES (%s,%s,%s,%s)
-#         """,
-#         (
-#             data["id"],
-#             data["student_id"],
-#             data["attendance_date"],
-#             data["status"]
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Attendance Added Successfully"})
-#
-#
-# # PUT
-# @app.route('/attendance/<int:id>', methods=['PUT'])
-# def update_attendance(id):
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         UPDATE attendance
-#         SET student_id=%s,
-#             attendance_date=%s,
-#             status=%s
-#         WHERE id=%s
-#         """,
-#         (
-#             data["student_id"],
-#             data["attendance_date"],
-#             data["status"],
-#             id
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Attendance Updated Successfully"})
-#
-#
-# # PATCH
-# @app.route('/attendance/<int:id>', methods=['PATCH'])
-# def patch_attendance(id):
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     if "student_id" in data:
-#         cur.execute(
-#             "UPDATE attendance SET student_id=%s WHERE id=%s",
-#             (data["student_id"], id)
-#         )
-#
-#     if "attendance_date" in data:
-#         cur.execute(
-#             "UPDATE attendance SET attendance_date=%s WHERE id=%s",
-#             (data["attendance_date"], id)
-#         )
-#
-#     if "status" in data:
-#         cur.execute(
-#             "UPDATE attendance SET status=%s WHERE id=%s",
-#             (data["status"], id)
-#         )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Attendance Updated Successfully"})
-#
-#
-# # DELETE
-# @app.route('/attendance/<int:id>', methods=['DELETE'])
-# def delete_attendance(id):
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         "DELETE FROM attendance WHERE id=%s",
-#         (id,)
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Attendance Deleted Successfully"})
+@app.post("/attendance")
+def add_attendance(data: dict):
 
-#
-# if __name__ == "__main__":
-#     app.run(port=8000, debug=True)
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        INSERT INTO attendance
+        (id, student_id, attendance_date, status)
+        VALUES (%s,%s,%s,%s)
+        """,
+        (
+            data["id"],
+            data["student_id"],
+            data["attendance_date"],
+            data["status"]
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Attendance Added Successfully"}
+
+
+# PUT
+@app.put("/attendance/{id}")
+def update_attendance(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        UPDATE attendance
+        SET student_id=%s,
+            attendance_date=%s,
+            status=%s
+        WHERE id=%s
+        """,
+        (
+            data["student_id"],
+            data["attendance_date"],
+            data["status"],
+            id
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Attendance Updated Successfully"}
+
+
+# PATCH
+@app.patch("/attendance/{id}")
+def patch_attendance(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    if "student_id" in data:
+        cur.execute(
+            "UPDATE attendance SET student_id=%s WHERE id=%s",
+            (data["student_id"], id)
+        )
+
+    if "attendance_date" in data:
+        cur.execute(
+            "UPDATE attendance SET attendance_date=%s WHERE id=%s",
+            (data["attendance_date"], id)
+        )
+
+    if "status" in data:
+        cur.execute(
+            "UPDATE attendance SET status=%s WHERE id=%s",
+            (data["status"], id)
+        )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Attendance Updated Successfully"}
+
+
+# DELETE
+@app.delete("/attendance/{id}")
+def delete_attendance(id: int):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        "DELETE FROM attendance WHERE id=%s",
+        (id,)
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Attendance Deleted Successfully"}

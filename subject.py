@@ -1,131 +1,125 @@
-# from flask import Flask, request, jsonify
-# from flask_mysqldb import MySQL
-#
-# app = Flask(__name__)
-#
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'info123'
-# app.config['MYSQL_DB'] = 'elearningdb'
-#
-# mysql = MySQL(app)
+from fastapi import FastAPI
+import pymysql
 
-# GET
-# @app.route('/subjects', methods=['GET'])
-# def get_subjects():
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM subject")
-#     rows = cur.fetchall()
-#     cur.close()
-#     return jsonify(rows)
+app = FastAPI()
+
+# MySQL Connection
+connection = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="info123",
+    database="elearningdb"
+)
+
+
+# GET ALL SUBJECTS
+@app.get("/subjects")
+def get_subjects():
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM subject")
+    rows = cur.fetchall()
+    cur.close()
+
+    return {"subjects": rows}
+
 
 
 # POST
-# @app.route('/subjects', methods=['POST'])
-# def add_subject():
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         INSERT INTO subject
-#         (id, subject_name, course_name, credits)
-#         VALUES (%s,%s,%s,%s)
-#         """,
-#         (
-#             data["id"],
-#             data["subject_name"],
-#             data["course_name"],
-#             data["credits"]
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Subject Added Successfully"})
+@app.post("/subjects")
+def add_subject(data: dict):
 
-#
-# # PUT
-# @app.route('/subjects/<int:id>', methods=['PUT'])
-# def update_subject(id):
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         UPDATE subject
-#         SET subject_name=%s,
-#             course_name=%s,
-#             credits=%s
-#         WHERE id=%s
-#         """,
-#         (
-#             data["subject_name"],
-#             data["course_name"],
-#             data["credits"],
-#             id
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Subject Updated Successfully"})
-#
-#
-# # PATCH
-# @app.route('/subjects/<int:id>', methods=['PATCH'])
-# def patch_subject(id):
-#
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     if "subject_name" in data:
-#         cur.execute(
-#             "UPDATE subject SET subject_name=%s WHERE id=%s",
-#             (data["subject_name"], id)
-#         )
-#
-#     if "course_name" in data:
-#         cur.execute(
-#             "UPDATE subject SET course_name=%s WHERE id=%s",
-#             (data["course_name"], id)
-#         )
-#
-#     if "credits" in data:
-#         cur.execute(
-#             "UPDATE subject SET credits=%s WHERE id=%s",
-#             (data["credits"], id)
-#         )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Subject Updated Successfully"})
-#
-#
-# # DELETE
-# @app.route('/subjects/<int:id>', methods=['DELETE'])
-# def delete_subject(id):
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         "DELETE FROM subject WHERE id=%s",
-#         (id,)
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Subject Deleted Successfully"})
-#
-#
-# if __name__ == "__main__":
-#     app.run(port=8000, debug=True)
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        INSERT INTO subject
+        (id, subject_name, course_name, credits)
+        VALUES (%s,%s,%s,%s)
+        """,
+        (
+            data["id"],
+            data["subject_name"],
+            data["course_name"],
+            data["credits"]
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Subject Added Successfully"}
+
+
+# PUT
+@app.put("/subjects/{id}")
+def update_subject(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        UPDATE subject
+        SET subject_name=%s,
+            course_name=%s,
+            credits=%s
+        WHERE id=%s
+        """,
+        (
+            data["subject_name"],
+            data["course_name"],
+            data["credits"],
+            id
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Subject Updated Successfully"}
+
+
+# PATCH
+@app.patch("/subjects/{id}")
+def patch_subject(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    if "subject_name" in data:
+        cur.execute(
+            "UPDATE subject SET subject_name=%s WHERE id=%s",
+            (data["subject_name"], id)
+        )
+
+    if "course_name" in data:
+        cur.execute(
+            "UPDATE subject SET course_name=%s WHERE id=%s",
+            (data["course_name"], id)
+        )
+
+    if "credits" in data:
+        cur.execute(
+            "UPDATE subject SET credits=%s WHERE id=%s",
+            (data["credits"], id)
+        )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Subject Patched Successfully"}
+
+
+# DELETE
+@app.delete("/subjects/{id}")
+def delete_subject(id: int):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        "DELETE FROM subject WHERE id=%s",
+        (id,)
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Subject Deleted Successfully"}

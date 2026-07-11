@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>E-Learning-System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Title Section Starts Here -->
+    <div class="title-section">
+
+        <img src="{{ url_for('static',
+            filename='images/logo.png') }}"
+            class="logo">
+
+        <h1>E-Learning Management System</h1
+
+    </div>
+
+<h1>Dashboard</h1>
+
+<div class="cards">
+
+    <a href="/students" class="card">
+        <img src="{{ url_for('static', filename='images/student.png') }}">
+        <h3>Students</h3>
+    </a>
+
+    <a href="/teachers" class="card">
+        <img src="{{ url_for('static', filename='images/teacher.png') }}">
+        <h3>Teachers</h3>
+    </a>
+
+    <a href="/courses" class="card">
+        <img src="{{ url_for('static', filename='images/course.png') }}">
+        <h3>Courses</h3>
+    </a>
+
+    <a href="/subjects" class="card">
+        <img src="{{ url_for('static', filename='images/subject.png') }}">
+        <h3>Subjects</h3>
+    </a>
+
+    <a href="/enrollments" class="card">
+        <img src="{{ url_for('static', filename='images/enrollment.png') }}">
+        <h3>Enrollments</h3>
+    </a>
+
+    <a href="/assignments" class="card">
+        <img src="{{ url_for('static', filename='images/assignment.png') }}">
+        <h3>Assignments</h3>
+    </a>
+
+    <a href="/quizzes" class="card">
+        <img src="{{ url_for('static', filename='images/quiz.png') }}">
+        <h3>Quizzes</h3>
+    </a>
+
+    <a href="/marks" class="card">
+        <img src="{{ url_for('static', filename='images/mark.png') }}">
+        <h3>Marks</h3>
+    </a>
+
+    <a href="/attendance" class="card">
+        <img src="{{ url_for('static', filename='images/attendance.png') }}">
+        <h3>Attendance</h3>
+    </a>
+
+
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markss</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="table-container">
+    <h1>Marks</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Quiz ID</th>
+            <th>Marks</th>
+        </tr>
+
+        {% for m in marks %}
+        <tr>
+            <td>{{ m[0] }}</td>
+            <td>{{ m[1] }}</td>
+            <td>{{ m[2] }}</td>
+            <td>{{ m[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

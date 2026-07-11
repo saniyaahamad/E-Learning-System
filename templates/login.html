@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="login-body">
+
+<div class="login-container">
+
+    <img src="{{ url_for('static', filename='images/logo.png') }}"
+         class="login-logo">
+
+    <h1 class="login-title">
+        E-Learning System
+    </h1>
+
+    <form action="/check_login" method="POST">
+
+        <input type="text"
+               name="username"
+               placeholder="Username"
+               class="login-input">
+
+        <input type="password"
+               name="password"
+               placeholder="Password"
+               class="login-input">
+
+        <br><br>
+
+        <button type="submit"
+                class="login-btn">
+            Login
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quizzes</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="table-container">
+
+    <h1>Quizzes</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Course ID</th>
+            <th>Total Marks</th>
+            <th>Date</th>
+        </tr>
+
+        {% for q in quizzes %}
+        <tr>
+            <td>{{ q[0] }}</td>
+            <td>{{ q[1] }}</td>
+            <td>{{ q[2] }}</td>
+            <td>{{ q[3] }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+</body>
+</html>

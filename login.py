@@ -1,129 +1,138 @@
-# from flask import Flask, request, jsonify
-# from flask_mysqldb import MySQL
-#
-# app = Flask(__name__)
-#
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'info123'
-# app.config['MYSQL_DB'] = 'elearningdb'
+from fastapi import FastAPI
+import pymysql
 
-mysql = MySQL(app)
+app = FastAPI()
+
+# MySQL Connection
+connection = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="info123",
+    database="elearningdb"
+)
 
 
-# GET
-# @app.route('/login', methods=['GET'])
-# def get_login():
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM login")
-#     rows = cur.fetchall()
-#     cur.close()
-#
-#     return jsonify(rows)
+# GET ALL LOGINS
+@app.get("/login")
+def get_login():
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM login")
+    rows = cur.fetchall()
+    cur.close()
+
+    return {"login": rows}
+
+
+# GET ONE LOGIN
+@app.get("/login/{id}")
+def get_one_login(id: int):
+    cur = connection.cursor()
+    cur.execute(
+        "SELECT * FROM login WHERE id=%s",
+        (id,)
+    )
+    row = cur.fetchone()
+    cur.close()
+
+    return {"login": row}
 
 
 # POST
-# @app.route('/login', methods=['POST'])
-# def add_login():
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         INSERT INTO login
-#         (id, username, password, role)
-#         VALUES (%s,%s,%s,%s)
-#         """,
-#         (
-#             data["id"],
-#             data["username"],
-#             data["password"],
-#             data["role"]
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Login Added Successfully"})
-#
-#
-# # PUT
-# @app.route('/login/<int:id>', methods=['PUT'])
-# def update_login(id):
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         """
-#         UPDATE login
-#         SET username=%s,
-#             password=%s,
-#             role=%s
-#         WHERE id=%s
-#         """,
-#         (
-#             data["username"],
-#             data["password"],
-#             data["role"],
-#             id
-#         )
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Login Updated Successfully"})
+@app.post("/login")
+def add_login(data: dict):
 
-#
-# # PATCH
-# @app.route('/login/<int:id>', methods=['PATCH'])
-# def patch_login(id):
-#     data = request.get_json()
-#
-#     cur = mysql.connection.cursor()
-#
-#     if "username" in data:
-#         cur.execute(
-#             "UPDATE login SET username=%s WHERE id=%s",
-#             (data["username"], id)
-#         )
-#
-#     if "password" in data:
-#         cur.execute(
-#             "UPDATE login SET password=%s WHERE id=%s",
-#             (data["password"], id)
-#         )
-#
-#     if "role" in data:
-#         cur.execute(
-#             "UPDATE login SET role=%s WHERE id=%s",
-#             (data["role"], id)
-#         )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Login Updated Successfully"})
-#
-#
-# # DELETE
-# @app.route('/login/<int:id>', methods=['DELETE'])
-# def delete_login(id):
-#     cur = mysql.connection.cursor()
-#
-#     cur.execute(
-#         "DELETE FROM login WHERE id=%s",
-#         (id,)
-#     )
-#
-#     mysql.connection.commit()
-#     cur.close()
-#
-#     return jsonify({"message": "Login Deleted Successfully"})
-# #
-# #
-# if __name__ == "__main__":
-#     app.run(port=8000, debug=True)
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        INSERT INTO login
+        (id, username, password, role)
+        VALUES (%s,%s,%s,%s)
+        """,
+        (
+            data["id"],
+            data["username"],
+            data["password"],
+            data["role"]
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Login Added Successfully"}
+
+
+# PUT
+@app.put("/login/{id}")
+def update_login(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        """
+        UPDATE login
+        SET username=%s,
+            password=%s,
+            role=%s
+        WHERE id=%s
+        """,
+        (
+            data["username"],
+            data["password"],
+            data["role"],
+            id
+        )
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Login Updated Successfully"}
+
+
+# PATCH
+@app.patch("/login/{id}")
+def patch_login(id: int, data: dict):
+
+    cur = connection.cursor()
+
+    if "username" in data:
+        cur.execute(
+            "UPDATE login SET username=%s WHERE id=%s",
+            (data["username"], id)
+        )
+
+    if "password" in data:
+        cur.execute(
+            "UPDATE login SET password=%s WHERE id=%s",
+            (data["password"], id)
+        )
+
+    if "role" in data:
+        cur.execute(
+            "UPDATE login SET role=%s WHERE id=%s",
+            (data["role"], id)
+        )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Login Updated Successfully"}
+
+
+# DELETE
+@app.delete("/login/{id}")
+def delete_login(id: int):
+
+    cur = connection.cursor()
+
+    cur.execute(
+        "DELETE FROM login WHERE id=%s",
+        (id,)
+    )
+
+    connection.commit()
+    cur.close()
+
+    return {"message": "Login Deleted Successfully"}
